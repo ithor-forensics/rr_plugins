@@ -39,7 +39,7 @@ sub pluginmain {
 	my $ntuser = shift;
 	::logMsg("Launching advanced_ip_scanner v.".$VERSION);
 	::rptMsg("advanced_ip_scanner v.".$VERSION); # banner
-    ::rptMsg("(".getHive().") ".getShortDescr()."\n"); # banner
+	::rptMsg("(".getHive().") ".getShortDescr()."\n"); # banner
 	my $reg = Parse::Win32Registry->new($ntuser);
 	my $root_key = $reg->get_root_key;
 
@@ -92,68 +92,63 @@ sub pluginmain {
 					my @skvals = $sk->get_list_of_values();
 					if (scalar(@skvals) > 0) {
 						foreach my $y (@skvals) {
-						my $skname = $y->get_name();
-						my $skdata = $y->get_data();
-						if ($skname eq "IpRangesMruList") {
-							::rptMsg($skname);
-							::rptMsg("INFO: IpRangesMruList shows all the ranges scanned by the tool. Prefix first digit indicates frequency. ");
-							::rptMsg(sprintf "%-10s %-30s","Prefix","Range scanned");
-							# Transform it into an array by new line separator
-							my @skdata_iprangesmrulist = split ("\n", $skdata);
-							for (my $i = 0; $i <= $#skdata_iprangesmrulist; $i++) {
-								my $first_element = $skdata_iprangesmrulist[$i];
-								$i++;
-								my $second_element = $skdata_iprangesmrulist[$i];
-
-								::rptMsg(sprintf "%-10s %-30s",$first_element,$second_element);
-							}
-							::rptMsg("");
-						} elsif ($skname eq "LastRangeUsed"){
-							::rptMsg($skname);
-							::rptMsg("INFO: LastRangeUsed indicates last range/target scanned.");
-							::rptMsg(sprintf "%-10s %-30s",$skname,$skdata);
-							::rptMsg("");
-						} elsif ($skname eq "SearchMruList"){
-							::rptMsg($skname);
-							::rptMsg("INFO: SearchMruList shows the IP addresses searched via the application GUI.");
-							::rptMsg(sprintf "%-10s %-30s","Prefix","Term searched");
-							# Transform it into an array by new line separator
-							my @skdata_searchmrulist = split ("\n", $skdata);
-							for (my $i = 0; $i <= $#skdata_searchmrulist; $i++) {
-								my $first_element = $skdata_searchmrulist[$i];
-								$i++;
-								my $second_element = $skdata_searchmrulist[$i];
-
-								::rptMsg(sprintf "%-10s %-30s",$first_element,$second_element);
-							}
-							::rptMsg("");
-						} elsif ($skname eq "LAST_OFN_DIR"){
-							::rptMsg($skname);
-							::rptMsg("INFO: LAST_OFN_DIR is the last directory used for importing targets file or saving output scan.");
-							::rptMsg(sprintf "%-10s %-30s",$skname,$skdata);
-							::rptMsg("");
+							my $skname = $y->get_name();
+							my $skdata = $y->get_data();
+								if ($skname eq "IpRangesMruList") {
+									::rptMsg($skname);
+									::rptMsg("INFO: IpRangesMruList shows all the ranges scanned by the tool. Prefix first digit indicates frequency. ");
+									::rptMsg(sprintf "%-10s %-30s","Prefix","Range scanned");
+									# Transform it into an array by new line separator
+									my @skdata_iprangesmrulist = split ("\n", $skdata);
+									for (my $i = 0; $i <= $#skdata_iprangesmrulist; $i++) {
+										my $first_element = $skdata_iprangesmrulist[$i];
+										$i++;
+										my $second_element = $skdata_iprangesmrulist[$i];
+										::rptMsg(sprintf "%-10s %-30s",$first_element,$second_element);
+									}
+									::rptMsg("");
+								} elsif ($skname eq "LastRangeUsed") {
+									::rptMsg($skname);
+									::rptMsg("INFO: LastRangeUsed indicates last range/target scanned.");
+									::rptMsg(sprintf "%-10s %-30s",$skname,$skdata);
+									::rptMsg("");
+								} elsif ($skname eq "SearchMruList") {
+									::rptMsg($skname);
+									::rptMsg("INFO: SearchMruList shows the IP addresses searched via the application GUI.");
+									::rptMsg(sprintf "%-10s %-30s","Prefix","Term searched");
+									# Transform it into an array by new line separator
+									my @skdata_searchmrulist = split ("\n", $skdata);
+									for (my $i = 0; $i <= $#skdata_searchmrulist; $i++) {
+										my $first_element = $skdata_searchmrulist[$i];
+										$i++;
+										my $second_element = $skdata_searchmrulist[$i];
+										::rptMsg(sprintf "%-10s %-30s",$first_element,$second_element);
+									}
+									::rptMsg("");
+								} elsif ($skname eq "LAST_OFN_DIR"){
+									::rptMsg($skname);
+									::rptMsg("INFO: LAST_OFN_DIR is the last directory used for importing targets file or saving output scan.");
+									::rptMsg(sprintf "%-10s %-30s",$skname,$skdata);
+									::rptMsg("");
+								}
 						}
-					}
-		}	
-		else {
-			::rptMsg($key_path." has no values.");
-		}
-
-
-				}
+					}		
+					else {
+						::rptMsg('Software\\famatech\\advanced_IP_scanner\\State has no values.');
+					}							
+				}	
+				else {
+					::rptMsg($key_path." has no State subkey."); 
+				}				
 			}
 		}
 		else {
 			::rptMsg($key_path." has no subkeys.");
-		}		
-		
+		}				
 	}
 	else {
 		::rptMsg($key_path." not found.");
 	}
-
-
 }
 
 1;
-
