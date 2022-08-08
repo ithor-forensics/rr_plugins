@@ -1,10 +1,10 @@
-# Advanced IP Scanner
-# Plugin for Registry Ripper, NTUSER.DAT - Parses the registry information about the usage of Advanced IP Scanner. 
-# Based on the info found at https://www.huntandhackett.com/blog/advanced-ip-scanner-the-preferred-scanner-in-the-apt-toolbox
-# License???
+#!/usr/bin/perl -w
+# Plugin for Registry Ripper - Parses Advanced IP Scanner usage from the registry
+# Based on https://www.huntandhackett.com/blog/advanced-ip-scanner-the-preferred-scanner-in-the-apt-toolbox
+# Copyright(C) 2022 David Helkowski
+# Perl License ( Artistic and GPL 1 )
 
 package advanced_ip_scanner;
-use warnings;
 use strict;
 
 my %config = (
@@ -30,8 +30,8 @@ sub pluginmain {
     my ( $class, $ntuser ) = @_;
     
     ::logMsg( "Launching advanced_ip_scanner v.$VERSION" );
-    ::rptMsg( "advanced_ip_scanner v.$VERSION".          ); # banner
-    ::rptMsg( "(".getHive().") ".getShortDescr()."\n"    ); # banner
+    ::rptMsg( "advanced_ip_scanner v.$VERSION"           );
+    ::rptMsg( "(".getHive().") ".getShortDescr()."\n"    );
     
     my $reg = Parse::Win32Registry->new($ntuser);
     my $root_key = $reg->get_root_key;
@@ -47,7 +47,7 @@ sub pluginmain {
     ::rptMsg("Advanced IP Scanner");
     ::rptMsg($key_path);
     ::rptMsg("LastWrite Time ".::getDateFromEpoch($key->get_timestamp())."Z");
-    ::rptMsg("");        
+    ::rptMsg("");
 
     my @vals = $key->get_list_of_values();
     if( !@vals ) {
@@ -58,21 +58,21 @@ sub pluginmain {
         my $data = $v->get_data();
         if( $name eq "locale" ) {
             ::rptMsg("INFO: locale value defines the language settings of the user.");
-            ::rptMsg(sprintf "%-10s %-30s",$name,$data);
+            ::rptMsg( sprintf( "%-10s %-30s",$name,$data ) );
             ::rptMsg("");
         }
         elsif( $name eq "locale_timestamp" ) {
             ::rptMsg("INFO: locale_timestamp defines the first time the application has been started.");
             # Removing the last 3 epoch digits. 
             # Pending to find a way to make getDateFromEpoch work with miliseconds
-            my $data_len10 = substr $data, 0, 10;
-            ::rptMsg(sprintf "%-10s %-30s",$name,::getDateFromEpoch($data_len10)."Z");
-            ::rptMsg("");                    
+            my $data_len10 = substr( $data, 0, 10 );
+            ::rptMsg( sprintf( "%-10s %-30s",$name,::getDateFromEpoch($data_len10)."Z" ) );
+            ::rptMsg("");
         }
         elsif( $name eq "run" ) {
             ::rptMsg("INFO: run shows the application version.");
-            ::rptMsg(sprintf "%-10s %-30s",$name,$data);
-            ::rptMsg("");                    
+            ::rptMsg( sprintf( "%-10s %-30s",$name,$data ) );
+            ::rptMsg("");
         }
     }
     
@@ -115,33 +115,34 @@ sub pluginmain {
                     my $second_element = $skdata_iprangesmrulist[$i];
                     ::rptMsg(sprintf "%-10s %-30s",$first_element,$second_element);
                 }
-                ::rptMsg("");
             }
             elsif( $skname eq "LastRangeUsed" ) {
                 ::rptMsg($skname);
                 ::rptMsg("INFO: LastRangeUsed indicates last range/target scanned.");
-                ::rptMsg(sprintf "%-10s %-30s",$skname,$skdata);
-                ::rptMsg("");
+                ::rptMsg( sprintf( "%-10s %-30s", $skname, $skdata ) );
             }
             elsif( $skname eq "SearchMruList" ) {
                 ::rptMsg($skname);
                 ::rptMsg("INFO: SearchMruList shows the IP addresses searched via the application GUI.");
                 ::rptMsg(sprintf "%-10s %-30s","Prefix","Term searched");
+                
                 # Transform it into an array by new line separator
                 my @skdata_searchmrulist = split ("\n", $skdata);
                 for (my $i = 0; $i <= $#skdata_searchmrulist; $i++) {
                     my $first_element = $skdata_searchmrulist[$i++];
                     my $second_element = $skdata_searchmrulist[$i];
-                    ::rptMsg(sprintf "%-10s %-30s",$first_element,$second_element);
+                    ::rptMsg( sprintf( "%-10s %-30s", $first_element, $second_element ) );
                 }
-                ::rptMsg("");
             }
             elsif( $skname eq "LAST_OFN_DIR" ) {
                 ::rptMsg($skname);
                 ::rptMsg("INFO: LAST_OFN_DIR is the last directory used for importing targets file or saving output scan.");
-                ::rptMsg(sprintf "%-10s %-30s",$skname,$skdata);
-                ::rptMsg("");
+                ::rptMsg( sprintf( "%-10s %-30s", $skname, $skdata ) );
             }
+            else {
+                next;
+            }
+            ::rptMsg("");
         }
     }
     if( !$state_found ) {
